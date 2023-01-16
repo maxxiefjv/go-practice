@@ -9,6 +9,8 @@ import (
 
 	"nhooyr.io/websocket"
 	"nhooyr.io/websocket/wsjson"
+
+	"vasterd/max/chatter/models"
 )
 
 type echoServer struct{}
@@ -24,14 +26,14 @@ func (s echoServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*10)
 	defer cancel()
 
-	var v interface{}
+	var v models.ChatMessage
 	err = wsjson.Read(ctx, c, &v)
 	if err != nil {
 		fmt.Println("Error occurred: ", err)
 		return
 	}
 
-	log.Printf("received: %v", v)
+	log.Printf("received on channel: %d, message: %s", v.Channel, v.Msg)
 	err = wsjson.Write(ctx, c, &v)
 	if err != nil {
 		fmt.Println("Error occurred: ", err)

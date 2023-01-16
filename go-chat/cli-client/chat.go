@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"vasterd/max/chatter/models"
 
 	"nhooyr.io/websocket"
 	"nhooyr.io/websocket/wsjson"
@@ -35,20 +36,23 @@ func run() error {
 
 	for {
 		var message string
-
 		fmt.Scanln(&message)
-		err = wsjson.Write(ctx, conn, &message)
+
+		chatMsg := models.ChatMessage{
+			Channel: 0,
+			Msg:     message,
+		}
+		err = wsjson.Write(ctx, conn, &chatMsg)
 		if err != nil {
 			return fmt.Errorf("message could not be sent: %s", err)
 		}
 
 		fmt.Println("Waiting for incoming message...")
-		var v interface{}
-		err = wsjson.Read(ctx, conn, &v)
+		err = wsjson.Read(ctx, conn, &chatMsg)
 		if err != nil {
 			return fmt.Errorf("message could not be read: %s", err)
 		}
-		fmt.Printf("Received message: %s", v)
+		fmt.Printf("Received message from server: %+v", chatMsg)
 		break
 	}
 

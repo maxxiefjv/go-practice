@@ -1,4 +1,4 @@
-module vasterd/max/chat-socket
+module vasterd/max/chatter
 
 go 1.19
 
